@@ -1,0 +1,69 @@
+import time
+from dynamixel_sdk import * # --- 설정값 (내 환경에 맞게 확인) ---
+DEVICENAME          = '/dev/ttyACM0'  # 리눅스/맥: 보통 ttyACM0, 윈도우: COM3, COM4 등
+BAUDRATE            = 1000000         # 터틀봇3 모터 기본 통신속도 (1000000 아니면 57600)
+DXL_ID              = 1               # 왼쪽 바퀴 ID: 1, 오른쪽 바퀴 ID: 2
+PROTOCOL_VERSION    = 2.0
+
+from dynamixel_sdk import * # --- 설정값 (내 환경에 맞게 확인) ---
+DEVICENAME          = '/dev/ttyACM0'  # 리눅스/맥: 보통 ttyACM0, 윈도우: COM3, COM4 등
+BAUDRATE            = 1000000         # 터틀봇3 모터 기본 통신속도 (1000000 아니면 57600)
+DXL_ID              = 1               # 왼쪽 바퀴 ID: 1, 오른쪽 바퀴 ID: 2
+portHandler = PortHandler(DEVICENAME)
+packetHandler = PacketHandler(PROTOCOL_VERSION)
+
+if not portHandler.openPort():
+    print("can't open port.")
+    quit()
+
+if not portHandler.setBaudRate(BAUDRATE):
+    print("check baudrate")
+    quit()
+
+packetHandler.write1ByteTxRx(portHandler, DXL_ID, 64, 1)
+print("moving motor")
+
+
+try:
+    while True:
+        print("moving to p2000")
+        packetHandler.write4ByteTxRx(portHandler, DXL_ID, 116, 2000) # 116번은 목표 위치 주소
+        time.sleep(2)
+
+        print("moving to p0")
+        packetHandler.write4ByteTxRx(portHandler, DXL_ID, 116, 0)
+        time.sleep(2)
+
+except KeyboardInterrupt:
+    packetHandler.write1ByteTxRx(portHandler, DXL_ID, 64, 0)
+    portHandler.closePort()
+    print("end")
+portHandler = PortHandler(DEVICENAME)
+packetHandler = PacketHandler(PROTOCOL_VERSION)
+
+if not portHandler.openPort():
+    print("can't open port")
+    quit()
+
+if not portHandler.setBaudRate(BAUDRATE):
+    print("check baudrate")
+    quit()
+
+packetHandler.write1ByteTxRx(portHandler, DXL_ID, 64, 1)
+print("success motor")
+
+
+try:
+    while True:
+        print("moving to p2000")
+        packetHandler.write4ByteTxRx(portHandler, DXL_ID, 116, 2000) # 116번은 목표 위치 주소
+        time.sleep(2)
+
+        print("moving to p0")
+        packetHandler.write4ByteTxRx(portHandler, DXL_ID, 116, 0)
+        time.sleep(2)
+
+except KeyboardInterrupt:
+    packetHandler.write1ByteTxRx(portHandler, DXL_ID, 64, 0)
+    portHandler.closePort()
+    print("end")
